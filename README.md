@@ -21,6 +21,8 @@ which will prevent a subclass from declaring an overridden form of the method. T
 could use to avoid this check, so don't consider this absolute protection against it, but somewhat stronger than
 a simple advisory comment.
 
+    # Python 2 example
+
     import abcplus
 
     class Abstract(object):
@@ -42,3 +44,19 @@ a simple advisory comment.
 
         def cleanup(self):
             pass
+
+    # Python 3 requires you to define the metaclass differently
+
+    import abcplus
+
+    class Abstract(object, metaclass=abcplus.ABCMeta):
+        pass
+
+    # or use six to add the metaclass in a way that works with both
+
+    import abcplus
+    import six
+
+    @six.add_metaclass(abcplus.ABCMeta):
+    class Abstract(object):
+        pass
