@@ -31,7 +31,7 @@ def finalmethod(funcobj):
 
 class ABCMeta(abc.ABCMeta):
     """A modified version of ABCMeta metaclass that adds support for checking final methods"""
-    def __new__(mcls, name, bases, namespace):
+    def __new__(mcls, name, bases, namespace, **kwargs):
         """Check the inheritance tree for any final methods and then verify we aren't overriding them."""
 
         def _check_base_cls(name, namespace, base):
@@ -53,11 +53,19 @@ class ABCMeta(abc.ABCMeta):
         for base in bases:
             _check_base_cls(name, namespace, base)
 
-        cls = super(ABCMeta, mcls).__new__(mcls, name, bases, namespace)
+        cls = super(ABCMeta, mcls).__new__(mcls, name, bases, namespace, **kwargs)
 
         finals = set(ns_name
                      for ns_name, ns_value in namespace.items()
                      if getattr(ns_value, "__isfinalmethod__", False))
+        
         cls.__finalmethods__ = frozenset(finals)
 
         return cls
+
+
+class ABC(metaclass=ABCMeta):
+    """Helper class that provides a standard way to create an ABC using
+    inheritance.
+    """
+    __slots__ = ()
